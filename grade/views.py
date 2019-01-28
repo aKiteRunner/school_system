@@ -57,7 +57,7 @@ def exam_index(request, exam_id):
 
     Args:
         request: A HTTP request including user information.
-        exam_id: ID of the exam.
+        exam_id(int): ID of the exam.
 
     Returns:
          a rendered html document including a list of classes which attended the exam.
@@ -71,8 +71,8 @@ def class_exam(request, exam_id, class_id):
 
     Args:
         request: A HTTP request including user information.
-        exam_id: ID of the exam.
-        class_id: ID of the class.
+        exam_id(int): ID of the exam.
+        class_id(int): ID of the class.
 
     Returns:
         A rendered html document including a list of student information.
