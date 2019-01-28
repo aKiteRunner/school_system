@@ -59,4 +59,4 @@ class Grade(models.Model):
     """
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
-    performance = models.IntegerField()
+    performance = models.DecimalField(max_digits=10)
