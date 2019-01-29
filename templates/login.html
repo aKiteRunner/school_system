@@ -1,0 +1,128 @@
+{% load staticfiles %}
+
+<html>
+
+<style>
+    *, ::after, ::before {
+        box-sizing: border-box;
+    }
+
+    html {
+        height: 100%;
+    }
+
+    body {
+        text-align: center !important;
+        height: 100%;
+        display: flex;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-size: cover;
+    }
+
+    .flatbox {
+        width: 100%;
+        max-width: 350px;
+        background-color: white;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        margin: auto;
+        box-shadow: 4px 4px 6px #aaaaaa;
+    }
+
+    .gslogen {
+        font-family: Consolas;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .lbot {
+        background-color: #eeeeee;
+        height: 50px;
+        line-height: 50px;
+    }
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css">
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+    <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js"></script>
+</head>
+
+<body background="{% static 'images/login_register.jpg' %}">
+<form class="flatbox" method="post" action="{% url 'user_login' %}">
+    {% csrf_token %}
+    <div class="gslogen mb-4">成绩管理系统</div>
+    <label class="sr-only" for="username">用户名</label>
+    <input class="form-control" id="username" autofocus="autofocus" required="required" type="text" placeholder="用户名" name="username"/>
+    <p></p>
+    <div class="input-group" id="main">
+        <!--<label class="sr-only" for="inputPassword">密码</label>-->
+        <input class="form-control" id="password" required="required" type="password" placeholder="密码" name="password"
+               v-model="password" v-show="!showPass"/>
+        <input class="form-control" required="required" type="text" v-model="password" v-show="showPass"/>
+        <button type="button" @click="showPass = !showPass" class="btn btn-light">
+            <i v-show="!showPass" class="fa fa-eye-slash"></i>
+            <i v-show="showPass" class="fa fa-eye"></i>
+        </button>
+
+    </div>
+    <p></p>
+    <button class="btn btn-lg btn-primary btn-block mt-4 mb-2" type="submit">登录</button>
+</form>
+
+<div class="modal fade" id="id_errors" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">提示</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="info">
+                {{ message }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% if message %}
+
+    <script>
+        jQuery(function ($) {
+            $('#id_errors').modal('show')
+        });
+    </script>
+{% endif %}
+
+<script>
+    new Vue({
+        el: "#main",
+        data: {
+            showPass: false
+        },
+        methods: {}
+    });
+</script>
+</body>
+
+</html>

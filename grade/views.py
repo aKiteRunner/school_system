@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+from .controllers import *
 
 
 # Create your views here.
@@ -15,7 +17,7 @@ def index(request):
     Returns:
         a rendered html document including a list of exams ordered reversely by date.
     """
-    pass
+    return render(request, 'index.html')
 
 
 def user_login(request):
@@ -32,7 +34,25 @@ def user_login(request):
         set user state and return to index, if login successfully.
         send a notice to user, if fail to login.
     """
-    pass
+    if request.method == 'POST':
+        # process POST data and check password
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        state, context = user_login_controller(request, username, password)
+        if state == 0:
+            # Log in successfully, redirect to index
+            return redirect('index')
+        elif state == 1:
+            context['message'] = '用户未激活！'
+        elif state == 2:
+            context['message'] = '密码错误！'
+        else:
+            context['message'] = '未知错误！'
+        return render(request, 'login.html', context)
+    else:
+        # If method is not POST, present login page
+        return render(request, 'login.html')
+
 
 
 @login_required

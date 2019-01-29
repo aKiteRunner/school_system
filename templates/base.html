@@ -1,0 +1,291 @@
+<!doctype html>
+{% load staticfiles %}
+<html> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}
+        主页
+    {% endblock %}</title>
+    <meta name="description" content="CMS">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="apple-touch-icon" href="#">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/css/normalize.css' %}">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'assets/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/flag-icon.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/cs-skin-elastic.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/scss/style.css' %}">
+    <link href="{% static 'assets/css/lib/vector-map/jqvmap.min.css' %}" rel="stylesheet">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+</head>
+<body>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+<script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+
+<!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+<script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+<script src="{% static 'assets/js/plugins.js' %}"></script>
+<script src="{% static 'assets/js/main.js' %}"></script>
+
+<!-- Left Panel -->
+<aside id="left-panel" class="left-panel">
+    <nav class="navbar navbar-expand-sm navbar-default">
+        <div class="panel-body text-center">
+            <div class="bk-avatar">
+                <p></p>
+                {% if request.session.is_login == 'true' %}
+                    <img width="30%" height="30%" class="user-avatar rounded-circle"
+                         src="{% static 'images/admin.jpg' %}" alt="User Avatar">
+                {% else %}
+                    <img width="30%" height="30%" class="user-avatar rounded-circle"
+                         src="{% static 'images/offline.jpg' %}" alt="User Avatar">
+                {% endif %}
+            </div>
+            <div class="bk-padding-top-10">
+                <i class="fa fa-circle text-success"></i>
+                <a href="#">
+                    {% if request.session.is_login == 'true' %}
+                        {{ request.session.username }}
+                    {% else %}
+                        匿名用户
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+        <div id="main-menu" class="main-menu collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="/base"> <i class="menu-icon fa fa-twitter"></i>主页 </a>
+                </li>
+                <h3 class="menu-title"></h3><!-- /.menu-title -->
+                {% if request.session.type == '1' %}
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false"> <i class="menu-icon fa fa-comments"></i>会议</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="menu-icon fa fa-list-ul"></i><a href="/meeting/list2">会议列表</a></li>
+                            <li><i class="menu-icon fa fa-bullhorn"></i><a href="/release">发布会议</a></li>
+                            <li><i class="menu-icon fa fa-wrench"></i><a href="/meeting/manageList">管理会议</a></li>
+                            <li><i class="menu-icon fa fa-user-plus"></i><a href="/institution/employee/allemployee">配置账号</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <h3 class="menu-title"></h3><!-- /.menu-title -->
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false"> <i class="menu-icon fa fa-gavel"></i>评审</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="fa fa-book"></i><a href="/meeting/allpaper/">审核论文</a></li>
+                        </ul>
+                    </li>
+                {% elif request.session.type == '0' %}
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false"> <i class="menu-icon fa fa-comments"></i>会议</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="menu-icon fa fa-list-ul"></i><a href="/meeting/list2">会议列表</a></li>
+                            <li><i class="menu-icon fa fa-heart"></i><a href="/user/user/allfavorite">收藏列表</a></li>
+                            <li><i class="menu-icon fa fa-edit"></i><a href="/meeting/allregistermeeting">注册列表</a></li>
+                            <li><i class="menu-icon fa fa-phone"></i><a href="/meeting/alllistenmeeting">聆听列表</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false"> <i class="menu-icon fa fa-comments"></i>会议</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="menu-icon fa fa-list-ul"></i><a href="/meeting/list2">会议列表</a></li>
+                        </ul>
+                    </li>
+                    <!-- /.menu-title -->
+                {% endif %}
+
+                {% if request.session.type == '0' %}
+                    <h3 class="menu-title"></h3>
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false"> <i class="menu-icon fa fa-user"></i>个人信息</a>
+                        <ul class="sub-menu children dropdown-menu">
+                            <li><i class="menu-icon fa fa-user-circle"></i><a href="/personal_info/">个人主页</a></li>
+                            <li><i class="menu-icon fa fa-paper-plane"></i><a href="/user/user/allpaper/">评审结果</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </nav>
+</aside><!-- /#left-panel -->
+
+<!-- Left Panel -->
+
+<!-- Right Panel -->
+
+<div id="right-panel" class="right-panel">
+
+    <!-- Header-->
+    <header id="header" class="header">
+
+        <div class="header-menu">
+
+            <div class="col-sm-7">
+                <a id="menuToggle" class="menutoggle pull-left"><i class="fa fa fa-tasks"></i></a>
+                <div class="header-left">
+                    <div class="col-6">
+                        <form id="searchForm" class="form-horizontal" method="get" action="/meeting/search/">
+                            <div class="row">
+                                <a class="col-2" href="#" onclick="searchPost()"><i class="fa fa-search"></i></a>
+                                <input class="col-7 mr-sm-2 form-control rounded" type="text" placeholder="Search ..."
+                                       aria-label="Search" name="word" id="word">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-5">
+                <div class="user-area dropdown float-right">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="false">
+                        {% if  request.session.is_login == 'true' %}
+                            <img class="user-avatar rounded-circle" src="{% static 'images/admin.jpg' %}"
+                                 alt="User Avatar">
+                        {% else %}
+                            <img class="user-avatar rounded-circle" src="{% static 'images/offline.jpg' %}"
+                                 alt="User Avatar">
+                        {% endif %}
+                    </a>
+                    <div class="user-menu dropdown-menu">
+                        <li class="dropdown-menu-header bk-bg-white bk-margin-top-15"></li>
+                        {% if  request.session.is_login == 'true' %}
+                            <a class="nav-link" href="/logout"><i
+                                    class="fa fa-power-off"></i>登出</a>
+                        {% else %}
+                            <a class="nav-link" href="/login/"><i class="fa fa-power-off"></i>登录</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </header><!-- /header -->
+    <!-- Header-->
+
+    <div class="breadcrumbs">
+        <div class="col-sm-4">
+            <div class="page-header float-left">
+                <div class="page-title">
+                    <h1><em>成绩管理系统</em></h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <div class="page-header float-right">
+                <div class="page-title">
+                    <ol class="breadcrumb text-right">
+                        <li class="active">📝</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content mt-3">
+        {% block content %}
+            <img src="{% static 'images/index.jpg' %}">
+        {% endblock %}
+    </div> <!-- .content -->
+</div><!-- /#right-panel -->
+
+
+<div class="modal fade" id="id_errors" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">提示</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="info">
+                {{ message }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% if message %}
+
+    <script>
+        jQuery(function ($) {
+            $('#id_errors').modal('show')
+        });
+    </script>
+{% endif %}
+<!-- Right Panel -->
+<script>
+    function logout() {
+        $.ajax({
+            url: '/logout/',
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response['errorInfo'] != null) {
+                    alert(response['errorInfo']);
+                } else {
+                    alert(response['info']);
+                    window.location.href = '/base/';
+                }
+            }
+
+        })
+    }
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return decodeURI(r[2]);
+        return null;
+    }
+
+    laydate.render({
+        elem: '#time1'
+    });
+    laydate.render({
+        elem: '#time2'
+    });
+
+    let urlMessage = getQueryString('message');
+    if (urlMessage != null) {
+        jQuery(function ($) {
+            document.getElementById('info').innerText = urlMessage;
+            $('#id_errors').modal('show')
+        });
+    }
+
+    function searchPost() {
+        var postForm = document.getElementById('searchForm');
+        postForm.submit();
+    }
+</script>
+
+
+</body>
+</html>
