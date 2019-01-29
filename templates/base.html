@@ -45,7 +45,7 @@
         <div class="panel-body text-center">
             <div class="bk-avatar">
                 <p></p>
-                {% if request.session.is_login == 'true' %}
+                {% if user.is_authenticated %}
                     <img width="30%" height="30%" class="user-avatar rounded-circle"
                          src="{% static 'images/admin.jpg' %}" alt="User Avatar">
                 {% else %}
@@ -56,10 +56,10 @@
             <div class="bk-padding-top-10">
                 <i class="fa fa-circle text-success"></i>
                 <a href="#">
-                    {% if request.session.is_login == 'true' %}
-                        {{ request.session.username }}
+                    {% if user.is_authenticated %}
+                        {{ user.username }}
                     {% else %}
-                        匿名用户
+                        未登录
                     {% endif %}
                 </a>
             </div>
@@ -68,62 +68,23 @@
         <div id="main-menu" class="main-menu collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="active">
-                    <a href="/base"> <i class="menu-icon fa fa-twitter"></i>主页 </a>
+                    <a href="{% url 'index' %}"> <i class="menu-icon fa fa-twitter"></i>主页 </a>
                 </li>
                 <h3 class="menu-title"></h3><!-- /.menu-title -->
-                {% if request.session.type == '1' %}
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                           aria-expanded="false"> <i class="menu-icon fa fa-comments"></i>会议</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-list-ul"></i><a href="/meeting/list2">会议列表</a></li>
-                            <li><i class="menu-icon fa fa-bullhorn"></i><a href="/release">发布会议</a></li>
-                            <li><i class="menu-icon fa fa-wrench"></i><a href="/meeting/manageList">管理会议</a></li>
-                            <li><i class="menu-icon fa fa-user-plus"></i><a href="/institution/employee/allemployee">配置账号</a>
-                            </li>
-                        </ul>
+                    <li class=" dropdown">
+                        <a href="#" > <i class="menu-icon fa fa-pencil"></i>查看考试</a>
                     </li>
-                    <h3 class="menu-title"></h3><!-- /.menu-title -->
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                           aria-expanded="false"> <i class="menu-icon fa fa-gavel"></i>评审</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="fa fa-book"></i><a href="/meeting/allpaper/">审核论文</a></li>
-                        </ul>
-                    </li>
-                {% elif request.session.type == '0' %}
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                           aria-expanded="false"> <i class="menu-icon fa fa-comments"></i>会议</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-list-ul"></i><a href="/meeting/list2">会议列表</a></li>
-                            <li><i class="menu-icon fa fa-heart"></i><a href="/user/user/allfavorite">收藏列表</a></li>
-                            <li><i class="menu-icon fa fa-edit"></i><a href="/meeting/allregistermeeting">注册列表</a></li>
-                            <li><i class="menu-icon fa fa-phone"></i><a href="/meeting/alllistenmeeting">聆听列表</a></li>
-                        </ul>
-                    </li>
-                {% else %}
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                           aria-expanded="false"> <i class="menu-icon fa fa-comments"></i>会议</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-list-ul"></i><a href="/meeting/list2">会议列表</a></li>
-                        </ul>
-                    </li>
+
                     <!-- /.menu-title -->
-                {% endif %}
 
-                {% if request.session.type == '0' %}
+                {% if user.is_superuser %}
                     <h3 class="menu-title"></h3>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                           aria-expanded="false"> <i class="menu-icon fa fa-user"></i>个人信息</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-user-circle"></i><a href="/personal_info/">个人主页</a></li>
-                            <li><i class="menu-icon fa fa-paper-plane"></i><a href="/user/user/allpaper/">评审结果</a>
-                            </li>
-
-                        </ul>
+                    <li class="dropdown">
+                        <a href="#"> <i class="menu-icon fa fa-plus-square"></i>新增考试</a>
+                    </li>
+                    <h3 class="menu-title"></h3>
+                    <li class="dropdown">
+                        <a href="#"> <i class="menu-icon fa fa-user-plus"></i>添加学生</a>
                     </li>
                 {% endif %}
             </ul>
@@ -161,7 +122,7 @@
                 <div class="user-area dropdown float-right">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                        aria-expanded="false">
-                        {% if  request.session.is_login == 'true' %}
+                        {% if  user.is_authenticated %}
                             <img class="user-avatar rounded-circle" src="{% static 'images/admin.jpg' %}"
                                  alt="User Avatar">
                         {% else %}
@@ -171,11 +132,11 @@
                     </a>
                     <div class="user-menu dropdown-menu">
                         <li class="dropdown-menu-header bk-bg-white bk-margin-top-15"></li>
-                        {% if  request.session.is_login == 'true' %}
-                            <a class="nav-link" href="/logout"><i
+                        {% if user.is_authenticated %}
+                            <a class="nav-link" href="{% url 'user_logout' %}"><i
                                     class="fa fa-power-off"></i>登出</a>
                         {% else %}
-                            <a class="nav-link" href="/login/"><i class="fa fa-power-off"></i>登录</a>
+                            <a class="nav-link" href="{% url 'user_login' %}"><i class="fa fa-power-off"></i>登录</a>
                         {% endif %}
                     </div>
                 </div>

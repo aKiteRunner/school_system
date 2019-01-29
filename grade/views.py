@@ -6,7 +6,6 @@ from .controllers import *
 
 
 # Create your views here.
-@login_required
 def index(request):
     """The index of website
 
@@ -33,20 +32,20 @@ def user_login(request):
         request: A HTTP request including user information and POST data.
 
     Returns:
-        set user state and return to index, if login successfully.
+        set user status and return to index, if login successfully.
         send a notice to user, if fail to login.
     """
     if request.method == 'POST':
         # process POST data and check password
         username = request.POST.get('username')
         password = request.POST.get('password')
-        state, context = user_login_controller(request, username, password)
-        if state == 0:
+        status, context = user_login_controller(request, username, password)
+        if status == 0:
             # Log in successfully, redirect to index
             return redirect('index')
-        elif state == 1:
+        elif status == 1:
             context['message'] = '用户未激活！'
-        elif state == 2:
+        elif status == 2:
             context['message'] = '密码错误！'
         else:
             context['message'] = '未知错误！'
@@ -64,14 +63,14 @@ def user_logout(request):
         request: A HTTP request including user information.
 
     Returns:
-        set user state and return to index, if log out successfully.
+        set user status and return to index, if log out successfully.
         return to index, if user is not online (implemented by login_required).
     """
-    state, context = user_logout_controller(request)
+    status, context = user_logout_controller(request)
     # If log out successfully, redirect to login page,
     # else redirect to 404
-    if state == 0:
-        return redirect('user_login')
+    if status == 0:
+        return redirect('index')
     else:
         return render(request, '404.html')
 
