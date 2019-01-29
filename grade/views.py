@@ -6,6 +6,7 @@ from .controllers import *
 
 
 # Create your views here.
+@login_required
 def index(request):
     """The index of website
 
@@ -17,6 +18,7 @@ def index(request):
     Returns:
         a rendered html document including a list of exams ordered reversely by date.
     """
+    # TODO: implement this function
     return render(request, 'index.html')
 
 
@@ -54,7 +56,6 @@ def user_login(request):
         return render(request, 'login.html')
 
 
-
 @login_required
 def user_logout(request):
     """User log out
@@ -66,7 +67,13 @@ def user_logout(request):
         set user state and return to index, if log out successfully.
         return to index, if user is not online (implemented by login_required).
     """
-    pass
+    state, context = user_logout_controller(request)
+    # If log out successfully, redirect to login page,
+    # else redirect to 404
+    if state == 0:
+        return redirect('user_login')
+    else:
+        return render(request, '404.html')
 
 
 @login_required

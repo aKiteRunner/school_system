@@ -15,9 +15,10 @@ def user_login_controller(request, username, password):
         password(str): Password
 
     Returns:
-         state: 0: log in successfully,
-                1: user is not active,
-                2: password is incorrect
+         state(int): 0: log in successfully,
+                     1: user is not active,
+                     2: password is incorrect.
+         context(dict): data
     """
     state = None
     context = dict()
@@ -32,4 +33,25 @@ def user_login_controller(request, username, password):
             state = 1
     else:
         state = 2
+    return state, context
+
+
+def user_logout_controller(request):
+    """User logout controller
+
+    Args:
+        request: A HTTP request including user information
+
+    Returns:
+        state(int): 0: log out successfully,
+                    1: fails to log.
+        context(dict): data
+    """
+    state = None
+    context = dict()
+    if not request.user:
+        state = 1
+    else:
+        state = 0
+        logout(request)
     return state, context
