@@ -72,7 +72,7 @@
                 </li>
                 <h3 class="menu-title"></h3><!-- /.menu-title -->
                     <li class=" dropdown">
-                        <a href="#" > <i class="menu-icon fa fa-pencil"></i>查看考试</a>
+                        <a href="{% url 'exams' %}" > <i class="menu-icon fa fa-pencil"></i>查看考试</a>
                     </li>
 
                     <!-- /.menu-title -->
@@ -167,7 +167,6 @@
 
     <div class="content mt-3">
         {% block content %}
-            <img src="{% static 'images/index.jpg' %}">
         {% endblock %}
     </div> <!-- .content -->
 </div><!-- /#right-panel -->
@@ -225,13 +224,6 @@
         if (r != null) return decodeURI(r[2]);
         return null;
     }
-
-    laydate.render({
-        elem: '#time1'
-    });
-    laydate.render({
-        elem: '#time2'
-    });
 
     let urlMessage = getQueryString('message');
     if (urlMessage != null) {

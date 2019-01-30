@@ -9,15 +9,12 @@ from .controllers import *
 def index(request):
     """The index of website
 
-    Present all exams on a page.
-
     Args:
         request: A HTTP request including user information.
 
     Returns:
-        a rendered html document including a list of exams ordered reversely by date.
+        a rendered html document.
     """
-    # TODO: implement this function
     return render(request, 'index.html')
 
 
@@ -73,6 +70,27 @@ def user_logout(request):
         return redirect('index')
     else:
         return render(request, '404.html')
+
+
+@login_required
+def exams(request):
+    """The index of website
+
+        Present all exams on a page.
+
+        Args:
+            request: A HTTP request including user information.
+
+        Returns:
+            a rendered html document including a list of exams ordered reversely by date.
+    """
+    # Check the parameter, if page is invalid, page = 1
+    try:
+        page = int(request.GET['page'])
+    except (ValueError, KeyError):
+        page = 1
+    status, context = exams_controller(page)
+    return render(request, 'exams.html', context)
 
 
 @login_required
