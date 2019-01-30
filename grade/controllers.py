@@ -61,8 +61,12 @@ def exams_controller(page, page_count=10):
 
     Return all exams in a list.
 
+    Args:
+        page: the index of page.
+        page_count: max number of items presented on a page.
+
     Returns:
-        status(int): 0: query succssfully,
+        status(int): 0: query successfully,
                      1: fail to query.
         context(dict):
         {
@@ -71,11 +75,41 @@ def exams_controller(page, page_count=10):
     """
     context = dict()
     # Take no more than page_count exams.
-    exams = Exam.objects.all().order_by('-id')[page_count * (page - 1): page_count * page]
+    exams = Exam.objects.all().order_by('-id')[page_slice(page, page_count)]
     num_object = Exam.objects.count()
     page_dict = get_pages(num_object, page, page_count)
     status = 0
     context['exams'] = exams
+    context.update(page_dict)
+    return status, context
+
+
+def exam_index_controller(exam_id, page, page_count=10):
+    """Exam index controller.
+
+    Return all classes which attended the exam.
+
+    Args:
+        exam_id(int): ID of the exam.
+        page: the index of page.
+        page_count: max number of items presented on a page.
+
+    Returns:
+        status(int): 0: query successfully.
+                    1: fail to query.
+        context(dict):
+        {
+            exam_id(int): exam_id,
+            classes(list): [class1, class2, ...]
+        }
+    """
+    context = dict()
+    classes = Class.objects.all()[page_slice(page, page_count)]
+    num_object = Class.objects.count()
+    page_dict = get_pages(num_object, page, page_count)
+    status = 0
+    context['classes'] = classes
+    context['exam_id'] = exam_id
     context.update(page_dict)
     return status, context
 
@@ -105,3 +139,7 @@ def get_pages(num_object, cur_page, page_count):
     page_dict['pre_page'] = pre_page
     page_dict['next_page'] = next_page
     return page_dict
+
+
+def page_slice(page, page_count):
+    return slice(page_count * (page - 1), page_count * page)

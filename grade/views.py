@@ -85,10 +85,7 @@ def exams(request):
             a rendered html document including a list of exams ordered reversely by date.
     """
     # Check the parameter, if page is invalid, page = 1
-    try:
-        page = int(request.GET['page'])
-    except (ValueError, KeyError):
-        page = 1
+    page = get_page_from_request(request)
     status, context = exams_controller(page)
     return render(request, 'exams.html', context)
 
@@ -106,7 +103,9 @@ def exam_index(request, exam_id):
     Returns:
          a rendered html document including a list of classes which attended the exam.
     """
-    pass
+    page = get_page_from_request(request)
+    status, context = exam_index_controller(exam_id, page)
+    return render(request, 'classes.html', context)
 
 
 @login_required
@@ -208,3 +207,11 @@ def create_exam(request):
         A note for user indicating whether operating successfully.
     """
     pass
+
+
+def get_page_from_request(request):
+    try:
+        page = int(request.GET['page'])
+    except (ValueError, KeyError):
+        page = 1
+    return page
