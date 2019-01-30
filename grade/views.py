@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from django.http import HttpResponse
 from .controllers import *
+from decimal import Decimal
 
 
 # Create your views here.
@@ -128,15 +130,7 @@ def class_exam(request, exam_id, class_id):
         }
     """
     page = get_page_from_request(request)
-    status, context = class_grades_controller(exam_id, class_id, page)
-    if status == 0:
-        grades = context.pop('grades')
-        context['students'] = list()
-        for grade in grades:
-            student = grade.student
-            context['students'].append((student.student_name, student.student_id, student.gender, grade.performance))
-    else:
-        context['message'] = '班级不存在！'
+    status, context = all_students_grades(class_id, exam_id, page)
     return render(request, 'grades.html', context)
 
 
@@ -148,7 +142,7 @@ def set_student_performance(request):
         request: A HTTP request including user information and POST data.
         request.POST:
         {
-            student_id: 12345(str),
+            student_student_id: 12345(str),
             exam_id: 123(str),
             performance: 90.5(str),
         }
@@ -156,7 +150,14 @@ def set_student_performance(request):
     Returns:
         A note for user indicating whether operating successfully.
     """
-    pass
+    try:
+        student_student_id = request.POST['student_id']
+        exam_id = int(request.POST['exam_id'])
+        performance = Decimal(request.POST['performance']).quantize(Decimal('0.000'))
+        status, message = create_grade(student_student_id, exam_id, performance)
+        return HttpResponse(message)
+    except (KeyError, ValueError):
+        return HttpResponse('参数错误！')
 
 
 @login_required

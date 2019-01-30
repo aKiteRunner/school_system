@@ -155,6 +155,92 @@ def class_grades_controller(exam_id, class_id, page, page_count=10):
         return status, context
 
 
+def all_students_controller(class_id):
+    """All students in the class
+
+    Args:
+        class_id(int): ID of the class.
+
+    Returns:
+         status(int): 0: query successfully.
+                     1: fail to query.
+         context(dict):
+        {
+            students(list): [student1, student2, ...]
+        }
+    """
+    context = dict()
+    try:
+        klass = Class.objects.get(pk=class_id)
+        context['students'] = list(klass.student_set.all())
+        status = 0
+        return status, context
+    except ObjectDoesNotExist:
+        status = 1
+        return status, context
+
+
+def create_grade(student_student_id, exam_id, performance):
+    """Create a grade for the student
+
+    Args:
+        student_student_id(str): Real-life ID of the student.
+        exam_id(int): ID of exam.
+        performance(Decimal): Performance of the student.
+
+    Returns:
+        status(int): 0: create successfully.
+                     1: fail to create.
+        message(str): message.
+    """
+    try:
+        student = Student.objects.get(student_id=student_student_id)
+        exam = Exam.objects.get(pk=exam_id)
+        try:
+            Grade.objects.get(student__student_id=student_student_id, exam_id=exam_id)
+            status = 1
+            message = '该学生已有成绩！'
+            return status, message
+        except Grade.DoesNotExist:
+            grade = Grade(student=student, exam=exam, performance=performance)
+            grade.save()
+            status = 0
+            message = '操作成功'
+            return status, message
+    except Student.DoesNotExist:
+        status = 1
+        message = '学生不存在！'
+        return status, message
+    except Exam.DoesNotExist:
+        status = 1
+        message = '考试不存在！'
+        return status, message
+
+
+def all_students_grades(class_id, exam_id, page, page_count=10):
+    status, context = class_grades_controller(exam_id, class_id, page)
+    if status == 0:
+        grades = context.pop('grades')
+        students = list()
+        status, context2 = all_students_controller(class_id)
+        all_students = context2['students']
+        for grade in grades:
+            student = grade.student
+            all_students.remove(student)
+            students.append((student.student_name, student.student_id, student.gender, grade.performance))
+        for student in all_students:
+            students.append((student.student_name, student.student_id, student.gender, None))
+            # sort by grade
+        students = sorted(students, key=lambda x: x[3] if x[3] is not None else -1, reverse=True)
+        page_dict = get_pages(len(students), page, page_count)
+        context['students'] = students[page_slice(page, page_count)]
+        context.update(page_dict)
+    else:
+        status = 1
+        context['message'] = '班级不存在！'
+    return status, context
+
+
 def get_pages(num_object, cur_page, page_count):
     if num_object == 0:
         total_page = 1

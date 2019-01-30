@@ -225,14 +225,12 @@
         return null;
     }
 
-    let urlMessage = getQueryString('message');
-    if (urlMessage != null) {
+    function showMessage(message) {
         jQuery(function ($) {
-            document.getElementById('info').innerText = urlMessage;
+            document.getElementById('info').innerText = message;
             $('#id_errors').modal('show')
         });
     }
-
     function searchPost() {
         var postForm = document.getElementById('searchForm');
         postForm.submit();
