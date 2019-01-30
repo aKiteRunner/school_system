@@ -5,6 +5,7 @@ Return a tuple
 """
 from django.contrib.auth import authenticate, login, logout
 from .models import *
+from django.db.models import ObjectDoesNotExist
 
 
 def user_login_controller(request, username, password):
@@ -112,6 +113,46 @@ def exam_index_controller(exam_id, page, page_count=10):
     context['exam_id'] = exam_id
     context.update(page_dict)
     return status, context
+
+
+def class_grades_controller(exam_id, class_id, page, page_count=10):
+    """Class grades controller
+
+    Return all students grades of an exam in the class.
+
+    Args:
+        exam_id(int): ID of the exam.
+        class_id(int): ID of the class.
+        page: the index of page.
+        page_count: max number of items presented on a page.
+
+    Returns:
+        status(int): 0: query successfully.
+                     1: fail to query.
+        context(dict):
+        {
+            exam_id(int): exam_id,
+            class(Class): class,
+            grades(list): [grade1, grade2, ...]
+        }
+    """
+    status = None
+    context = dict()
+    # check whether class exists
+    try:
+        klass = Class.objects.get(pk=class_id)
+        grades = Grade.objects.filter(student__student_class_id=class_id, exam_id=exam_id)[page_slice(page, page_count)]
+        num_object = Grade.objects.filter(student__student_class_id=class_id, exam_id=exam_id).count()
+        page_dict = get_pages(num_object, page, page_count)
+        status = 0
+        context['grades'] = grades
+        context['exam_id'] = exam_id
+        context['class'] = klass
+        context.update(page_dict)
+    except ObjectDoesNotExist:
+        status = 1
+    finally:
+        return status, context
 
 
 def get_pages(num_object, cur_page, page_count):

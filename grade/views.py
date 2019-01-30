@@ -127,7 +127,17 @@ def class_exam(request, exam_id, class_id):
             performance: 90.5(decimal)
         }
     """
-    pass
+    page = get_page_from_request(request)
+    status, context = class_grades_controller(exam_id, class_id, page)
+    if status == 0:
+        grades = context.pop('grades')
+        context['students'] = list()
+        for grade in grades:
+            student = grade.student
+            context['students'].append((student.student_name, student.student_id, student.gender, grade.performance))
+    else:
+        context['message'] = '班级不存在！'
+    return render(request, 'grades.html', context)
 
 
 @login_required

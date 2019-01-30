@@ -12,7 +12,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <strong class="card-title">所有班级</strong>
+                        <strong class="card-title">{{ class }}</strong>
                     </div>
                     <div class="card-body">
                         <div>
@@ -20,14 +20,20 @@
                                 <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>班级</th>
+                                    <th>学号</th>
+                                    <th>姓名</th>
+                                    <th>性别</th>
+                                    <th>得分</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for class in classes %}
+                                {% for student_name, student_id, gender, performance in students %}
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
-                                        <td><a href="{% url 'class_exam' exam_id class.id %}">{{ class }}</a></td>
+                                        <td>{{ student_id }}</td>
+                                        <td>{{ student_name }}</td>
+                                        <td>{{ gender }}</td>
+                                        <td>{{ performance.normalize }}</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
