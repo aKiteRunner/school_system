@@ -138,6 +138,8 @@ def class_exam(request, exam_id, class_id):
 def set_student_performance(request):
     """Set grade of a student in an exam.
 
+    Ordinary user can create but update a grade while superuser can do both.
+
     Args:
         request: A HTTP request including user information and POST data.
         request.POST:
@@ -154,31 +156,11 @@ def set_student_performance(request):
         student_student_id = request.POST['student_id']
         exam_id = int(request.POST['exam_id'])
         performance = Decimal(request.POST['performance']).quantize(Decimal('0.000'))
-        status, message = create_grade(student_student_id, exam_id, performance)
+        user = request.user
+        status, message = update_grade(student_student_id, exam_id, performance, user.is_superuser)
         return HttpResponse(message)
     except (KeyError, ValueError):
         return HttpResponse('参数错误！')
-
-
-@login_required
-def update_student_performance(request):
-    """Update grade of a student in an exam.
-
-    Only administrator can call this method.
-
-    Args:
-        request: A HTTP request including user information and POST data.
-        request.POST:
-        {
-            student_id: 12345(str),
-            exam_id: 123(str),
-            performance: 90.5(str)
-        }
-
-    Returns:
-        A note for user indicating whether operating successfully.
-    """
-    pass
 
 
 @login_required
@@ -217,7 +199,12 @@ def create_exam(request):
     Returns:
         A note for user indicating whether operating successfully.
     """
-    pass
+    try:
+        exam_name = request.POST['exam_name']
+        status, message = create_exam_controller(exam_name, request.user.is_superuser)
+        return HttpResponse(message)
+    except KeyError:
+        return HttpResponse('请输入考试名称！')
 
 
 def get_page_from_request(request):

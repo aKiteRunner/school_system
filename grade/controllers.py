@@ -180,43 +180,6 @@ def all_students_controller(class_id):
         return status, context
 
 
-def create_grade(student_student_id, exam_id, performance):
-    """Create a grade for the student
-
-    Args:
-        student_student_id(str): Real-life ID of the student.
-        exam_id(int): ID of exam.
-        performance(Decimal): Performance of the student.
-
-    Returns:
-        status(int): 0: create successfully.
-                     1: fail to create.
-        message(str): message.
-    """
-    try:
-        student = Student.objects.get(student_id=student_student_id)
-        exam = Exam.objects.get(pk=exam_id)
-        try:
-            Grade.objects.get(student__student_id=student_student_id, exam_id=exam_id)
-            status = 1
-            message = '该学生已有成绩！'
-            return status, message
-        except Grade.DoesNotExist:
-            grade = Grade(student=student, exam=exam, performance=performance)
-            grade.save()
-            status = 0
-            message = '操作成功'
-            return status, message
-    except Student.DoesNotExist:
-        status = 1
-        message = '学生不存在！'
-        return status, message
-    except Exam.DoesNotExist:
-        status = 1
-        message = '考试不存在！'
-        return status, message
-
-
 def all_students_grades(class_id, exam_id, page, page_count=10):
     status, context = class_grades_controller(exam_id, class_id, page)
     if status == 0:
@@ -239,6 +202,73 @@ def all_students_grades(class_id, exam_id, page, page_count=10):
         status = 1
         context['message'] = '班级不存在！'
     return status, context
+
+
+def update_grade(student_student_id, exam_id, performance, is_superuser=False):
+    """Update a grade for the student
+
+    Ordinary user can create but update a grade.
+
+    Args:
+        student_student_id(str): Real-life ID of the student.
+        exam_id(int): ID of exam.
+        performance(Decimal): Performance of the student.
+        is_superuser(bool): If superuser calls this method, set it True
+
+    Returns:
+        status(int): 0: update successfully.
+                     1: fail to create.
+        message(str): message.
+    """
+    try:
+        student = Student.objects.get(student_id=student_student_id)
+        exam = Exam.objects.get(pk=exam_id)
+        try:
+            grade = Grade.objects.get(student__student_id=student_student_id, exam_id=exam_id)
+            if not is_superuser:
+                status = 1
+                message = '该学生已有成绩！'
+                return status, message
+            else:
+                grade.performance = performance
+        except Grade.DoesNotExist:
+            grade = Grade(student=student, exam=exam, performance=performance)
+        grade.save()
+        status = 0
+        message = '操作成功'
+        return status, message
+    except Student.DoesNotExist:
+        status = 1
+        message = '学生不存在！'
+        return status, message
+    except Exam.DoesNotExist:
+        status = 1
+        message = '考试不存在！'
+        return status, message
+
+
+def create_exam_controller(exam_name, is_superuser=False):
+    """Create an exam.
+
+    Args:
+        exam_name: Name of the exam.
+        is_superuser: If superuser calls this method, set it True
+
+    Returns:
+        status(int): 0: update successfully.
+                     1: fail to create.
+        message(str): message.
+    """
+    if not is_superuser:
+        status = 1
+        message = '没有权限！'
+        return status, message
+    else:
+        exam = Exam(exam_name=exam_name)
+        exam.save()
+        status = 0
+        message = '操作成功'
+        return status, message
 
 
 def get_pages(num_object, cur_page, page_count):
@@ -265,6 +295,7 @@ def get_pages(num_object, cur_page, page_count):
     page_dict['pages'] = pages
     page_dict['pre_page'] = pre_page
     page_dict['next_page'] = next_page
+    page_dict['index_start'] = page_count * (cur_page - 1)
     return page_dict
 
 

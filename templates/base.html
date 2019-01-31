@@ -80,7 +80,7 @@
                 {% if user.is_superuser %}
                     <h3 class="menu-title"></h3>
                     <li class="dropdown">
-                        <a href="#"> <i class="menu-icon fa fa-plus-square"></i>新增考试</a>
+                        <a href="#" onclick="showCreateExamModal()"> <i class="menu-icon fa fa-plus-square"></i>新增考试</a>
                     </li>
                     <h3 class="menu-title"></h3>
                     <li class="dropdown">
@@ -199,6 +199,30 @@
         });
     </script>
 {% endif %}
+{% if user.is_superuser %}
+<div class="modal fade" id="id_create_exam_modal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">新增考试</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="create_exam_info">
+                <form class="form-horizontal">
+                    <input class="form-control" type="text" name="exam_name" id="id_exam_name" placeholder="请输入考试名称" maxlength="80">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" data-dismiss="modal" onclick="submitExamForm()">确认</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 <!-- Right Panel -->
 <script>
     function logout() {
@@ -234,6 +258,28 @@
     function searchPost() {
         var postForm = document.getElementById('searchForm');
         postForm.submit();
+    }
+
+    function showCreateExamModal() {
+        jQuery(function ($) {
+            $('#id_create_exam_modal').modal('show')
+        });
+    }
+
+    function submitExamForm() {
+        let exam_name = document.getElementById('id_exam_name').value;
+        jQuery(function ($) {
+            $.ajax({
+                url: "{% url 'create_exam' %}",
+                method: 'POST',
+                data: {
+                    'exam_name': exam_name,
+                },
+                success: function (response) {
+                    showMessage(response);
+                }
+            })
+        })
     }
 </script>
 

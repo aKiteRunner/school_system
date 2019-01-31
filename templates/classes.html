@@ -26,7 +26,7 @@
                                 <tbody>
                                 {% for class in classes %}
                                     <tr>
-                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ forloop.counter | add:index_start }}</td>
                                         <td><a href="{% url 'class_exam' exam_id class.id %}">{{ class }}</a></td>
                                     </tr>
                                 {% endfor %}
