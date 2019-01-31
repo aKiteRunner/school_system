@@ -10,6 +10,6 @@ urlpatterns = [
     path('exam/<int:exam_id>/', exam_index, name='exam_index'),
     path('exam/<int:exam_id>/class/<int:class_id>/', class_exam, name='class_exam'),
     path('set-student-performance/', csrf_exempt(set_student_performance), name='set_student_performance'),
-    path('save-students-information/', save_students_information, name='save_students_information'),
+    path('save-students-information/', csrf_exempt(save_students_information), name='save_students_information'),
     path('create-exam/', csrf_exempt(create_exam), name='create_exam')
 ]

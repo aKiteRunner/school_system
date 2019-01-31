@@ -124,3 +124,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 LOGIN_URL = '/login/'
 
 SESSION_COOKIE_AGE = 604800
+
+# File max size 5 MB
+MAX_UPLOAD_SIZE = "5242880"

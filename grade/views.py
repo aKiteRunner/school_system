@@ -171,7 +171,7 @@ def save_students_information(request):
 
     Args:
         request: A HTTP request including user information, POST data and Excel file.
-        request.FILE is an Microsoft Excel file.
+        request.FILES['excel'] is an Microsoft Excel file.
         request.POST:
         {
             class_name: 12345(str)
@@ -180,7 +180,14 @@ def save_students_information(request):
     Returns:
         A note for user indicating whether operating successfully.
     """
-    pass
+    try:
+        excel_file = request.FILES['excel']
+        status, message = create_student_information(excel_file, request.user.is_superuser)
+        context = {'message': message}
+        return render(request, 'index.html', context)
+    except KeyError:
+        context = {'message': '请上传文件'}
+        return render(request, 'index.html', context)
 
 
 @login_required

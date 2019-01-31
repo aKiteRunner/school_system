@@ -6,6 +6,7 @@ Return a tuple
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 from django.db.models import ObjectDoesNotExist
+import pandas as pd
 
 
 def user_login_controller(request, username, password):
@@ -266,6 +267,48 @@ def create_exam_controller(exam_name, is_superuser=False):
     else:
         exam = Exam(exam_name=exam_name)
         exam.save()
+        status = 0
+        message = '操作成功'
+        return status, message
+
+
+def create_student_information(excel_file, is_superuser=False):
+    """Create students information
+
+    Args:
+        excel_file: A excel file .xls or .xlsx
+        is_superuser: If superuser calls this method, set it True
+
+    Returns:
+        status(int): 0: update successfully.
+                     1: fail to create.
+        message(str): message.
+    """
+    if not is_superuser:
+        status = 1
+        message = '没有权限！'
+        return status, message
+    else:
+        excel_data = pd.read_excel(excel_file)
+        classes = excel_data['班级']
+        names = excel_data['姓名']
+        ids = excel_data['学号']
+        genders = excel_data['性别']
+        created_class = dict()
+        for class_name, name, student_id, gender in zip(classes, names, ids, genders):
+            # Data type might be int or double
+            class_name, name, student_id, gender = str(class_name), str(name), str(student_id), str(gender)
+            # Create Class first
+            if class_name not in created_class:
+                try:
+                    klass = Class.objects.get(class_name=class_name)
+                except Class.DoesNotExist:
+                    klass = Class(class_name=class_name)
+                    klass.save()
+                created_class[class_name] = klass
+            klass = created_class[class_name]
+            student = Student(student_class=klass, student_name=name, student_id=student_id, gender=gender)
+            student.save()
         status = 0
         message = '操作成功'
         return status, message
