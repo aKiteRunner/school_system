@@ -214,6 +214,24 @@ def create_exam(request):
         return HttpResponse('请输入考试名称！')
 
 
+@login_required
+def create_excel(request, exam_id):
+    """Create a zip file including grades of the exam of classes which represented in a Excel file.
+
+    Args:
+        request: A HTTP request including user information and POST data.
+        exam_id: ID of the exam.
+
+    Returns:
+        a .zip file
+    """
+    status, zip_filename = create_excel_summary_controller(exam_id)
+    zip_file = open(zip_filename, 'rb')
+    response = HttpResponse(zip_file, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % zip_file.name
+    return response
+
+
 def get_page_from_request(request):
     try:
         page = int(request.GET['page'])

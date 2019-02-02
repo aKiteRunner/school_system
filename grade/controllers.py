@@ -7,6 +7,9 @@ from django.contrib.auth import authenticate, login, logout
 from .models import *
 from django.db.models import ObjectDoesNotExist
 import pandas as pd
+from tempfile import NamedTemporaryFile
+from pandas import ExcelWriter
+from zipfile import ZipFile
 
 
 def user_login_controller(request, username, password):
@@ -182,6 +185,21 @@ def all_students_controller(class_id):
 
 
 def all_students_grades(class_id, exam_id, page, page_count=10):
+    """All students grades in the class
+
+        Args:
+            class_id(int): ID of the class.
+            exam_id(int): ID of the exam.
+            page(int): page index.
+            page_count(int), max number of objects in a page.
+        Returns:
+             status(int): 0: query successfully.
+                         1: fail to query.
+             context(dict):
+            {
+                students(list): [(name, id, gender, grade, performance), ...]
+            }
+        """
     status, context = class_grades_controller(exam_id, class_id, page)
     if status == 0:
         grades = context.pop('grades')
@@ -312,6 +330,54 @@ def create_student_information(excel_file, is_superuser=False):
         status = 0
         message = '操作成功'
         return status, message
+
+
+def create_excel_summary_controller(exam_id):
+    """Create Excels of an exam
+
+        Args:
+            exam_id: ID of the exam
+
+        Returns:
+            status(int): 0: update successfully.
+                         1: fail to create.
+            zip_file(file): a .zip file.
+        """
+    try:
+        exam = Exam.objects.get(pk=exam_id)
+        zip_filename = '汇总.zip'
+        with ZipFile(zip_filename, 'w') as zip_file:
+            for klass in Class.objects.all():
+                excel_name = create_excel_controller(exam, klass)
+                zip_file.write(excel_name)
+        return 0, zip_filename
+    except Exam.DoesNotExist:
+        status = 1
+        return status, None
+
+
+def create_excel_controller(exam, klass):
+    """Create a Excel of a class
+
+        Args:
+            exam: The Exam object
+            klass: The Class object
+        Returns:
+            status(int): 0: update successfully.
+                         1: fail to create.
+            zip_file(file): a .xlsx file.
+        """
+    status, context = all_students_grades(klass.id, exam.id, 1, klass.student_set.count())
+    temp_excel = '{}-{}.xlsx'.format(klass.class_name, exam.exam_name)
+    writer = ExcelWriter(temp_excel)
+    student_information = list(zip(*context['students']))
+    data_map = dict()
+    if student_information:
+        data_map['姓名'], data_map['学号'],data_map['性别'],data_map['成绩'] = student_information
+    df = pd.DataFrame(data_map)
+    df.to_excel(writer, index=False)
+    writer.save()
+    return temp_excel
 
 
 def get_pages(num_object, cur_page, page_count):
