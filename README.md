@@ -3,7 +3,6 @@ School grade manage system
 
 ﻿Environment:
 - Anaconda 3.6
-﻿所依赖的包
 - Django 2.0.5
 - pymysql
 - pandas
