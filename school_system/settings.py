@@ -24,7 +24,7 @@ SECRET_KEY = '38+kp-#tbl(dx#8tecr2@vw^6mn06s+%!a5zh2-_&qsl(t8*a_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
