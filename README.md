@@ -27,7 +27,7 @@ School grade manage system
 添加学生信息:
 1. 上传Excel文件，如：
 
-| 姓名 | 学号 |
-| --- | --- |
-| git status | List all new or modified files |
-| git diff | Show file differences that haven't been staged |
+| 班级 | 学号 | 姓名 | 性别 |
+| --- | --- | --- | --- |
+| 1101 | 1 | 张三 | 男 |
+| 1101 | 2 | 李四 | 男 |
